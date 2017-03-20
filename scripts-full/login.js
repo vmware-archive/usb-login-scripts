@@ -133,14 +133,15 @@ if(stage < 1) {
 
 	make_active(chrome); // Need menu bar access
 
+	var old_win_id = (chrome.windows.length >= 1) ? chrome.windows[0].id() : null;
+
 	sys.click(sys.processes[chrome.name()].menuBars[0]
 		.menuBarItems['People'].menus[0]
 		.menuItems['Add Person\u2026']
 	);
 
 	// Wait for new profile window to open
-	if(chrome.windows.length >= 1) {
-		var old_win_id = chrome.windows[0].id();
+	if(old_win_id !== null) {
 		wait_until(() => (chrome.windows[0].id() != old_win_id));
 	} else {
 		wait_until(() => (chrome.windows.length >= 1));
