@@ -51,7 +51,7 @@ while true; do
 		exit 1;
 	fi;
 
-	if grep ' $USER_INITIALS ' < "$AUTHORFILE" > /dev/null; then
+	if grep " $USER_INITIALS:" < "$AUTHORFILE" > /dev/null; then
 		echo "WARNING: initials '$USER_INITIALS' are already taken" >&2;
 		USER_INITIALS="";
 	else

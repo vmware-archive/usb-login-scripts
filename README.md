@@ -13,29 +13,84 @@ These scripts extend the idea of loading SSH keys from a USB stick described
 
 ## Installation
 
-1. Follow the steps for setting up a flash drive and creating an SSH key described here:
-   http://tammersaleh.com/posts/building-an-encrypted-usb-drive-for-your-ssh-keys-in-os-x/
-1. Instead of the script provided in that article, copy all the scripts under
-   `/scripts-full/` in this repository on to the drive (if you prefer a different feature-
-   set, copy from one of the other `scripts-*` directories instead)
-1. Ensure the correct permissions are set (all `.sh` scripts should be 0700 and the `.js`
-   should be 0600. Your private key should be 0600)
-1. Rename `me-example.sh` to `me.sh` and change to match your details. For example:
+Follow the steps for setting up a flash drive described here:
+http://tammersaleh.com/posts/building-an-encrypted-usb-drive-for-your-ssh-keys-in-os-x/
+(quoted below)
+
+> Plug your drive into your computer and open Disk Utility. Select the disk (not the
+> volume) on the left and navigate to the "Erase" tab. You'll want to name the volume
+> something simple (such as "keys") to make it easier to access on the command line.
+>
+> Depending on the format of your USB key's partition table, then the partition table
+> is MBR, which doesn't support encryption, and you won't see encrypted partitions as
+> options in the "Format" dropdown. In that case, you'll have to do a two-step dance,
+> formatting the drive twice:
+>
+> 1. Once as OS X Extended (Journaled) using the GUID Partition Map, then..
+> 2. Again, using Mac OS Extended (Case-sensitive, Journaled, Encrypted).
+>
+> If you see the encrypted options in the dropdown, then just jump straight to #2
+> above.
+>
+> Now, you'll be prompted for your decryption password whenever you insert the drive.
+> Be sure not to save the password into the OS X Keychain.
+
+Instead of following the rest of that article, run the following commands and enter
+your details when prompted.
 
 ```bash
-#!/usr/bin/env bash
-
-DEFAULT_USER_EMAIL="jbloggs@pivotal.io";
-DEFAULT_USER_INITIALS="jb";
+cd /Volumes/usb-volume-name-here
+git clone git@github.com:pivotal/usb-login-scripts.git
+./usb-login-scripts/install.sh
 ```
 
-## scripts-full
+This will copy the repository on to your USB drive and create a `load` file in the
+root. It will also optionally create your public/private key pair in the root of
+your drive. You should upload the public key to github.
+
+Later you can update if needed by running a standard `git pull` from the
+`usb-login-scripts` directory.
+
+## scripts-original
+
+This is the original script from Tammer's blog. It will load your SSH key for a given
+number of hours, then eject the drive.
 
 ### Use
 
 1. Insert your USB key and enter your password to unlock it (if you chose to encrypt
 the entire filesystem)
-1. In a terminal run `/Volumes/my-usb-stick-name/xload.sh`
+1. In a terminal run `/Volumes/my-usb-stick-name/load <hours>`
+1. You will be prompted for your SSH key password; enter it and the key will be loaded
+   for the given number of hours
+1. The drive will automatically eject when the script is finished
+
+## scripts-autoexpire
+
+This is a small modification of the original script which will calculate an expiry
+time to be shortly after the end of the working day (6:20 local time).
+
+### Use
+
+1. Insert your USB key and enter your password to unlock it (if you chose to encrypt
+the entire filesystem)
+1. In a terminal run `/Volumes/my-usb-stick-name/load`
+1. You will be prompted for your SSH key password; enter it and the key will be loaded
+   until the end of the day
+1. The drive will automatically eject when the script is finished (to prevent this,
+   add `keep` to the command)
+
+## scripts-full
+
+This is a further advance on the scripts which will automatically add you to the
+machine's `.git_authors` file, and attempt to log you in to Chrome with minimal
+interaction.
+
+### Use
+
+1. Insert your USB key and enter your password to unlock it (if you chose to encrypt
+the entire filesystem)
+1. In a terminal run `/Volumes/my-usb-stick-name/load`
 1. You will be added to `.git_authors` immediately (to prevent this, add `--noduet` or
    `-d` to the command)
 1. You will be prompted for your SSH key password; enter it and the key will be loaded

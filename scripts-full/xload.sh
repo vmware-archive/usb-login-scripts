@@ -2,10 +2,6 @@
 
 ABSDIR="$(cd "$(dirname "$0")";pwd)";
 
-if [[ -x "$ABSDIR/me.sh" ]]; then
-	. "$ABSDIR/me.sh";
-fi;
-
 USER_EMAIL="${USER_EMAIL:-$DEFAULT_USER_EMAIL}";
 USER_INITIALS="${USER_INITIALS:-$DEFAULT_USER_INITIALS}";
 
@@ -22,7 +18,7 @@ ALLARGS=" $* ";
 if ! [[ "$ALLARGS" == *" --noduet "* ]] && ! [[ "$ALLARGS" =~ \ -[a-z]*d ]]; then
 	if ! USER_INITIALS="$USER_INITIALS" USER_EMAIL="$USER_EMAIL" "$ABSDIR/gitduet.sh"; then
 		echo "Failed to configure git duet author";
-		exit 1;
+		# not critical; continue
 	fi;
 fi;
 

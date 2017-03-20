@@ -21,7 +21,12 @@ if [[ -n "$1" ]]; then
 	HOURS="$1";
 fi;
 
-KEY="$ABSDIR/id_rsa";
+SSH_KEY_FILE="${SSH_KEY_FILE:-$ABSDIR/id_rsa}";
+
+if ! [[ -f "$SSH_KEY_FILE" ]]; then
+	echo "SSH key not found! $SSH_KEY_FILE" >&2;
+	exit 1;
+fi;
 
 if [[ -z "$HOURS" ]]; then
 	MIN_LIFE_S=600;
@@ -39,13 +44,13 @@ fi;
 
 if [[ -z "$KEY_PASSWORD" ]]; then
 	# Use interactive mode
-	/usr/bin/ssh-add -t "$SECONDS" "$KEY";
+	/usr/bin/ssh-add -t "$SECONDS" "$SSH_KEY_FILE";
 	exit $?;
 fi;
 
 # Use expect to send password via tty
-if SECONDS="$SECONDS" KEY="$KEY" KEY_PASSWORD="$KEY_PASSWORD" expect <<END >/dev/null 2>&1; then
-spawn ssh-add -t "$SECONDS" "$KEY";
+if SECONDS="$SECONDS" SSH_KEY_FILE="$SSH_KEY_FILE" KEY_PASSWORD="$KEY_PASSWORD" expect <<END >/dev/null 2>&1; then
+spawn ssh-add -t "$SECONDS" "$SSH_KEY_FILE";
 expect "Enter passphrase for *:"
 send "$KEY_PASSWORD\n";
 expect {
