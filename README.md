@@ -92,11 +92,11 @@ interaction.
 the entire filesystem)
 1. In a terminal run `/Volumes/my-usb-stick-name/load`
 1. You will be added to `.git_authors` immediately (to prevent this, add `--noduet` or
-   `-d` to the command)
+   `-D` to the command)
 1. You will be prompted for your SSH key password; enter it and the key will be loaded
-   until the end of the day (to prevent this, add `--nokey` or `-k` to the command)
+   until the end of the day (to prevent this, add `--nokey` or `-K` to the command)
 1. You will be prompted for your Okta password; enter it and the script will begin
-   creating a new profile in Google Chrome (to prevent this, add `--nologin` or `-l` to
+   creating a new profile in Google Chrome (to prevent this, add `--nologin` or `-L` to
    the command)
    * You may be prompted to enable assistive access for the Terminal. The OS will guide
      you through how to do this. If this happens, you may need to kill and re-run the
@@ -105,11 +105,17 @@ the entire filesystem)
    * Most of the login process is automated, but you will still need to respond to the
      two-factor-authentication (2FA) prompts manually. There are also some dialogs which
      appear after logging in which you will need to manually dismiss.
+1. If you specify `--update` or `-u`, a `git pull` will be attempted to update the
+   scripts.
 1. The drive will automatically eject when the script is finished (to prevent this, add
-   `--noeject` or `-e` to the command)
+   `--noeject` or `-E` to the command)
 
 As with typical UNIX commands, you can chain short-form arguments. For example,
-`xload -kl` will disable key loading and logging in to Chrome.
+`load -KL` will disable key loading and logging in to Chrome.
+
+Note that all stages except update will run by default. You can disable stages using
+capital letters, or focus stages using lowercase letters (e.g. `load -k` will *only* load
+the SSH key, or `load -ke` will load the SSH key and eject).
 
 If anything goes wrong, simply kill with Ctrl+C.
 
