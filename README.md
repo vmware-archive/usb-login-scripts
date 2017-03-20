@@ -9,6 +9,7 @@ These scripts extend the idea of loading SSH keys from a USB stick described
   (or after 1 hour, whichever is longer)
 * Add your email and initials to the .git_authors file on the machine
 * Log in to Google Chrome and Okta (requires manual intervention for 2FA prompts)
+* Automatically pull script updates from github (off by default; needs flag)
 * Automatically unmount the drive when complete
 
 ## Installation
@@ -36,7 +37,8 @@ http://tammersaleh.com/posts/building-an-encrypted-usb-drive-for-your-ssh-keys-i
 > Be sure not to save the password into the OS X Keychain.
 
 Instead of following the rest of that article, run the following commands and enter
-your details when prompted.
+your details when prompted (note that you will need to have some git keys loaded to
+access the repository, e.g. from your pair)
 
 ```bash
 cd /Volumes/usb-volume-name-here
