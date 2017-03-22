@@ -7,7 +7,7 @@ These scripts extend the idea of loading SSH keys from a USB stick described
 
 * Load a password-protected SSH key, which will automatically expire at 6:20 local time
   (or after 1 hour, whichever is longer)
-* Add your email and initials to the .git_authors file on the machine
+* Add your email and initials to the .git-authors file on the machine
 * Log in to Google Chrome and Okta (requires manual intervention for 2FA prompts)
 * Automatically pull script updates from github (off by default; needs flag)
 * Automatically unmount the drive when complete
@@ -85,7 +85,7 @@ the entire filesystem)
 ## scripts-full
 
 This is a further advance on the scripts which will automatically add you to the
-machine's `.git_authors` file, and attempt to log you in to Chrome with minimal
+machine's `.git-authors` file, and attempt to log you in to Chrome with minimal
 interaction.
 
 ### Use
@@ -93,7 +93,7 @@ interaction.
 1. Insert your USB key and enter your password to unlock it (if you chose to encrypt
 the entire filesystem)
 1. In a terminal run `/Volumes/my-usb-stick-name/load`
-1. You will be added to `.git_authors` immediately (to prevent this, add `--noduet` or
+1. You will be added to `.git-authors` immediately (to prevent this, add `--noduet` or
    `-D` to the command)
 1. You will be prompted for your SSH key password; enter it and the key will be loaded
    until the end of the day (to prevent this, add `--nokey` or `-K` to the command)
@@ -130,7 +130,7 @@ Orchestration is handled by `xload.sh`, but scripts can also be executed on thei
 
 #### Git duet author file
 
-Searches the `~/.git_authors` file for the user's email address, and if not found,
+Searches the `~/.git-authors` file for the user's email address, and if not found,
 attempts to create a new entry under `authors:`. If the user's initials are already in
 use, will prompt for alternative initials.
 

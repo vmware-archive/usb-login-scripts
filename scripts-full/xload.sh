@@ -2,14 +2,18 @@
 
 ABSDIR="$(cd "$(dirname "$0")";pwd)";
 
+USER_NAME="${USER_NAME:-$DEFAULT_USER_NAME}";
 USER_EMAIL="${USER_EMAIL:-$DEFAULT_USER_EMAIL}";
 USER_INITIALS="${USER_INITIALS:-$DEFAULT_USER_INITIALS}";
 
 if [[ -z "$USER_EMAIL" ]]; then
+	if [[ -n "$USER_NAME" ]]; then
+		echo "Hi, $USER_NAME";
+	fi;
 	echo -n "Enter your email address: ";
 	read USER_EMAIL;
 else
-	echo "Login for $USER_EMAIL";
+	echo "Login for $USER_NAME [$USER_EMAIL]";
 fi;
 
 ALLARGS=" $* ";

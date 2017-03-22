@@ -4,13 +4,14 @@ ABSDIR="$(cd "$(dirname "$0")";pwd)";
 
 if [[ "$1" == *"help"* ]] || [[ "$1" == *"?"* ]]; then
   cat <<END
-Usage: $0 [<initials> [<email>]]
+Usage: $0 [<initials> [<name> [<email>]]]
 
-  Adds the given details to the git_authors file.
+  Adds the given details to the git-authors file.
 
 Parameters:
 
   initials              The initials for the user to add
+  name.                 The name for the user to add
   email                 The email address for the user to add
 
 END
@@ -22,7 +23,11 @@ if [[ -n "$1" ]]; then
 fi;
 
 if [[ -n "$2" ]]; then
-	USER_EMAIL="$2";
+	USER_NAME="$2";
+fi;
+
+if [[ -n "$3" ]]; then
+	USER_EMAIL="$3";
 fi;
 
 if [[ -z "$USER_EMAIL" ]]; then
@@ -30,15 +35,34 @@ if [[ -z "$USER_EMAIL" ]]; then
 	read USER_EMAIL;
 fi;
 
-AUTHORFILE="$HOME/.git_authors";
+AUTHORFILE="$HOME/.git-authors";
 
-if ! [[ -f "$AUTHORFILE" ]] || ! grep 'authors:' < "$AUTHORFILE" > /dev/null; then
-	echo "authors:" >> "$AUTHORFILE";
+if ! [[ -f "$AUTHORFILE" ]]; then
+	touch "$AUTHORFILE";
 fi;
 
-if grep "$USER_EMAIL" < "$AUTHORFILE" > /dev/null; then
+if grep "$USER_EMAIL" < "$AUTHORFILE" > /dev/null || grep "; ${USER_EMAIL%@*}" < "$AUTHORFILE" > /dev/null; then
 	echo "Already in git duet authors list";
 	exit 0;
+fi;
+
+NAMES_SECTION="authors:";
+if ! grep "$NAMES_SECTION" < "$AUTHORFILE" > /dev/null; then
+	if grep 'pairs:' < "$AUTHORFILE" > /dev/null; then
+		NAMES_SECTION="pairs:";
+	else
+		echo "$NAMES_SECTION" >> "$AUTHORFILE";
+	fi;
+fi;
+
+EMAILS_SECTION="email_addresses:";
+if ! grep "$EMAILS_SECTION" < "$AUTHORFILE" > /dev/null; then
+	echo "$EMAILS_SECTION" >> "$AUTHORFILE";
+fi;
+
+if [[ -z "$USER_NAME" ]]; then
+	echo -n "Enter name: ";
+	read USER_NAME;
 fi;
 
 while true; do
@@ -55,10 +79,11 @@ while true; do
 		echo "WARNING: initials '$USER_INITIALS' are already taken" >&2;
 		USER_INITIALS="";
 	else
-		sed -e '/authors:/ a\
+		sed -e "/$NAMES_SECTION/ a"'\
+'"\ \ $USER_INITIALS: $USER_NAME" -e "/$EMAILS_SECTION/ "'a\
 '"\ \ $USER_INITIALS: $USER_EMAIL" "$AUTHORFILE" > "$AUTHORFILE-2";
 		mv "$AUTHORFILE-2" "$AUTHORFILE";
-		echo "Added to git_authors file";
+		echo "Added to git-authors file";
 		exit 0;
 	fi;
 done;

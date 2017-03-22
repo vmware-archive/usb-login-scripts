@@ -6,12 +6,16 @@ echo "This will install in to $DRIVEDIR.";
 echo "If this is not correct, exit with Ctrl+C";
 echo;
 
-echo -n "Enter your email address: ";
-read USER_EMAIL;
+echo -n "Enter your name (for git duet) - typically first and last name: ";
+read USER_NAME;
 echo;
 
 echo -n "Enter your initials (for git duet): ";
 read USER_INITIALS;
+echo;
+
+echo -n "Enter your email address: ";
+read USER_EMAIL;
 echo;
 
 if ! [[ -f "$DRIVEDIR/id_rsa" ]]; then
@@ -19,7 +23,7 @@ if ! [[ -f "$DRIVEDIR/id_rsa" ]]; then
 	read PROMPT;
 	echo;
 	if [[ "$PROMPT" == "y"* ]]; then
-		if ! ssh-keygen -f "$DRIVEDIR/id_rsa" -C "$USER_EMAIL"; then
+		if ! ssh-keygen -f "$DRIVEDIR/id_rsa" -C "$USER_NAME"; then
 			echo "Failed to generate key. Aborting." >&2;
 			exit 1;
 		fi;
@@ -55,12 +59,14 @@ if [[ -f "$LOADFILE" ]]; then
 fi;
 
 # Minimal attempt to escape special characters to avoid broken load script
+USER_NAME="$(echo "$USER_NAME" | sed "s/'/'\\\\''/g")";
 USER_EMAIL="$(echo "$USER_EMAIL" | sed "s/'/'\\\\''/g")";
 USER_INITIALS="$(echo "$USER_INITIALS" | sed "s/'/'\\\\''/g")";
 
 cat >"$LOADFILE" <<EOF;
 ABSBASEDIR="\$(cd "\$(dirname "\$0")";pwd)";
 
+DEFAULT_USER_NAME='$USER_NAME' \\
 DEFAULT_USER_EMAIL='$USER_EMAIL' \\
 DEFAULT_USER_INITIALS='$USER_INITIALS' \\
 SSH_KEY_FILE="\$ABSBASEDIR/id_rsa" \\
