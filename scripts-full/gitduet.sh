@@ -11,7 +11,7 @@ Usage: $0 [<initials> [<name> [<email>]]]
 Parameters:
 
   initials              The initials for the user to add
-  name.                 The name for the user to add
+  name                  The name for the user to add
   email                 The email address for the user to add
 
 END

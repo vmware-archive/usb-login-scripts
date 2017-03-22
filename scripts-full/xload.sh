@@ -25,7 +25,7 @@ fi;
 
 # Add to git authors
 if [[ "$ALLARGS" =~ \ -[a-zA-Z]*d ]] && ! [[ "$ALLARGS" == *" --noduet "* ]] && ! [[ "$ALLARGS" =~ \ -[a-zA-Z]*D ]]; then
-	if ! USER_INITIALS="$USER_INITIALS" USER_EMAIL="$USER_EMAIL" "$ABSDIR/gitduet.sh"; then
+	if ! USER_INITIALS="$USER_INITIALS" USER_NAME="$USER_NAME" USER_EMAIL="$USER_EMAIL" "$ABSDIR/gitduet.sh"; then
 		echo "Failed to configure git duet author";
 		# not critical; continue
 	fi;
