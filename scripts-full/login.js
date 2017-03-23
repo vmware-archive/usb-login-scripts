@@ -4,7 +4,7 @@
 ObjC.import('stdlib');
 
 var sys = Application('System Events');
-var chrome = Application('Google Chrome');
+var chrome = Application('com.google.Chrome');
 
 var user_email = $.getenv('USER_EMAIL');
 
