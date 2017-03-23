@@ -7,6 +7,7 @@ var sys = Application('System Events');
 var chrome = Application('com.google.Chrome');
 
 var user_email = $.getenv('USER_EMAIL');
+var mfa_mode = $.getenv('MFA_MODE');
 
 // Passwords are obfuscated when sent to the browser so that they won't be trivial to read if
 // it ever messes up and prints them in an error or similar
@@ -116,13 +117,22 @@ function runjs_inside_webview_hack(app, tab, wvid, code) {
 	runjs(app, tab, "document.getElementById('signin-frame').dataset.c='';");
 }
 
+function find_window(app, id) {
+	for(var i = 0; i < app.windows.length; i ++) {
+		if(app.windows[i].id() == id) {
+			return app.windows[i];
+		}
+	}
+	return null;
+}
+
 // Open Chrome if not running
 if(!sys.processes[chrome.name()]) {
 	chrome.launch();
 }
 
 var stage = 0;
-var current_window; // TODO: seems this stores the idea of frontmost-window, rather than the idea of frontmost-window-at-this-time
+var current_window_id;
 var profile_login_tab;
 var not_okta = '';
 
@@ -133,7 +143,16 @@ if(stage < 1) {
 
 	make_active(chrome); // Need menu bar access
 
-	var old_win_id = (chrome.windows.length >= 1) ? chrome.windows[0].id() : null;
+	var old_win_id = null;
+	var close_old_win = false;
+	if(chrome.windows.length >= 1) {
+		var win = chrome.windows[0];
+		old_win_id = win.id();
+		// Launching Chrome opens a blank window; detect this and close it later
+		if(win.tabs.length === 1 && win.tabs[0].title() === 'New Tab') {
+			close_old_win = true;
+		}
+	}
 
 	sys.click(sys.processes[chrome.name()].menuBars[0]
 		.menuBarItems['People'].menus[0]
@@ -146,8 +165,15 @@ if(stage < 1) {
 	} else {
 		wait_until(() => (chrome.windows.length >= 1));
 	}
-	current_window = chrome.windows[0];
-	profile_login_tab = current_window.activeTab();
+	current_window_id = chrome.windows[0].id();
+	profile_login_tab = chrome.windows[0].activeTab();
+
+	if(close_old_win) {
+		var win = find_window(chrome, old_win_id);
+		if(win !== null) {
+			chrome.close(win);
+		}
+	}
 
 	// Detect where we've ended up
 	stage = run_until_success(() => runjs(chrome, profile_login_tab,
@@ -160,8 +186,8 @@ if(stage < 1) {
 		"return 0;"
 	));
 } else {
-	current_window = chrome.windows[0];
-	profile_login_tab = current_window.activeTab();
+	current_window_id = chrome.windows[0].id();
+	profile_login_tab = chrome.windows[0].activeTab();
 }
 
 if(stage < 2) {
@@ -185,7 +211,7 @@ if(stage < 4) {
 	// Wait for popup to disappear
 	// (might be a long time; Google might have decided to make us solve a CAPTCHA)
 	run_until_success(() => {
-		profile_login_tab = current_window.activeTab();
+		profile_login_tab = find_window(chrome, current_window_id).activeTab();
 		return runjs(chrome, profile_login_tab, "return !!document.getElementById('signin-frame');");
 	});
 
@@ -263,11 +289,17 @@ if(stage < 7) {
 if(stage < 8) {
 	console.log("Stage 8: Okta 2FA (manual action required!)");
 
+	if(mfa_mode === 'push') {
+		// TODO: press button to push to device
+	} else if(mfa_mode === 'app') {
+		// TODO: press button to enter code
+	}
+
 	// Wait for login pages to disappear
 	run_until_success(() => {
 		try {
 			return (
-				current_window.activeTab().id() != profile_login_tab.id() ||
+				find_window(chrome, current_window_id).activeTab().id() != profile_login_tab.id() ||
 				runjs(chrome, profile_login_tab, "return !document.getElementById('signin-frame');")
 			);
 		} catch(e) {
@@ -280,11 +312,11 @@ if(stage < 8) {
 if(stage < 9) {
 	console.log("Stage 9a: Open Okta launchpad");
 	// Wait for auth tab to close
-	while(current_window.tabs.length > 1) {
-		chrome.close(current_window.tabs[1]);
+	while(find_window(chrome, current_window_id).tabs.length > 1) {
+		chrome.close(find_window(chrome, current_window_id).tabs[1]);
 		delay(0.1);
 	}
-	profile_login_tab = current_window.activeTab();
+	profile_login_tab = find_window(chrome, current_window_id).activeTab();
 
 	profile_login_tab.url = 'https://pivotal.okta.com';
 
@@ -336,8 +368,12 @@ if(stage < 10) {
 
 if(stage < 11) {
 	console.log("Stage 11: Okta 2FA (manual action required!)");
-	// TODO: find something to wait for (can't check page elements since may be configured to auto-open tabs)
-//	run_until_success(() => runjs(chrome, profile_login_tab, "return !!document.getElementsByName('username')[0];"));
+	if(mfa_mode === 'push') {
+		// TODO: press button to push to device
+	} else if(mfa_mode === 'app') {
+		// TODO: press button to enter code
+	}
+	// No need to wait; we're done. Might as well let the script unmount the drive while the user does 2FA.
 	stage = 11;
 }
 

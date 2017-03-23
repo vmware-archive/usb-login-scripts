@@ -5,6 +5,7 @@ ABSDIR="$(cd "$(dirname "$0")";pwd)";
 USER_NAME="${USER_NAME:-$DEFAULT_USER_NAME}";
 USER_EMAIL="${USER_EMAIL:-$DEFAULT_USER_EMAIL}";
 USER_INITIALS="${USER_INITIALS:-$DEFAULT_USER_INITIALS}";
+MFA_MODE="${MFA_MODE:-$DEFAULT_MFA_MODE}";
 
 if [[ -z "$USER_EMAIL" ]]; then
 	if [[ -n "$USER_NAME" ]]; then
@@ -64,7 +65,7 @@ if [[ "$ALLARGS" =~ \ -[a-zA-Z]*l ]] && ! [[ "$ALLARGS" == *" --nologin "* ]] &&
 	if [[ -z "$USER_PASSWORD" ]] || [[ "$USER_PASSWORD" == "-" ]]; then
 		echo "Skipping Chrome login";
 	else
-		if ! USER_EMAIL="$USER_EMAIL" USER_PASSWORD="$USER_PASSWORD" osascript -l JavaScript < "$ABSDIR/login.js"; then
+		if ! USER_EMAIL="$USER_EMAIL" USER_PASSWORD="$USER_PASSWORD" MFA_MODE="$MFA_MODE" osascript -l JavaScript < "$ABSDIR/login.js"; then
 			echo "Failed to sign in to Chrome";
 			exit 1;
 		fi;
