@@ -18,8 +18,9 @@ Follow the steps for setting up a flash drive described here:
 http://tammersaleh.com/posts/building-an-encrypted-usb-drive-for-your-ssh-keys-in-os-x/
 (quoted below)
 
-> Plug your drive into your computer and open Disk Utility. Select the disk (not the
-> volume) on the left and navigate to the "Erase" tab. You'll want to name the volume
+> Plug your drive into your computer and open Disk Utility. Eject the volume by
+> clicking the icon in the list on the left, then select the disk (not the volume)
+> on the left and navigate to the "Erase" tab. You'll want to name the volume
 > something simple (such as "keys") to make it easier to access on the command line.
 >
 > Depending on the format of your USB key's partition table, then the partition table
@@ -28,7 +29,8 @@ http://tammersaleh.com/posts/building-an-encrypted-usb-drive-for-your-ssh-keys-i
 > formatting the drive twice:
 >
 > 1. Once as OS X Extended (Journaled) using the GUID Partition Map, then..
-> 2. Again, using Mac OS Extended (Case-sensitive, Journaled, Encrypted).
+> 2. Again, using Mac OS Extended (Case-sensitive, Journaled, Encrypted). Note that
+>    you may need to re-eject the volume before doing this.
 >
 > If you see the encrypted options in the dropdown, then just jump straight to #2
 > above.
