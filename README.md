@@ -14,29 +14,17 @@ These scripts extend the idea of loading SSH keys from a USB stick described
 
 ## Installation
 
-Follow the steps for setting up a flash drive described here:
-http://tammersaleh.com/posts/building-an-encrypted-usb-drive-for-your-ssh-keys-in-os-x/
-(quoted below)
+1. Insert your USB and run the following command to get the disk identifier:
+```bash
+diskutil list 
+```
+1. Run the following commands, inserting your variables.
 
-> Plug your drive into your computer and open Disk Utility. Eject the volume by
-> clicking the icon in the list on the left, then select the disk (not the volume)
-> on the left and navigate to the "Erase" tab. You'll want to name the volume
-> something simple (such as "keys") to make it easier to access on the command line.
->
-> Depending on the format of your USB key's partition table, then the partition table
-> is MBR, which doesn't support encryption, and you won't see encrypted partitions as
-> options in the "Format" dropdown. In that case, you'll have to do a two-step dance,
-> formatting the drive twice:
->
-> 1. Once as OS X Extended (Journaled) using the GUID Partition Map, then..
-> 2. Again, using Mac OS Extended (Case-sensitive, Journaled, Encrypted). Note that
->    you may need to re-eject the volume before doing this.
->
-> If you see the encrypted options in the dropdown, then just jump straight to #2
-> above.
->
-> Now, you'll be prompted for your decryption password whenever you insert the drive.
-> Be sure not to save the password into the OS X Keychain.
+```bash
+diskutil eraseVolume jhfsx <new-usb-name> /Volumes/<old-usb-name>/
+diskutil partitionDisk /dev/<disk-identifier> GPT JHFS+ <new-usb-name> 0b
+diskutil cs convert /Volumes/<new-usb-name>/ -passphrase
+```
 
 Instead of following the rest of that article, run the following commands and enter
 your details when prompted (note that you will need to have some git keys loaded to
