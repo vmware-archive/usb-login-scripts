@@ -15,17 +15,16 @@ These scripts extend the idea of loading SSH keys from a USB stick described
 ## Installation
 
 1.  Insert your USB and run the following command to get the disk identifier:
-  ```bash 
-  diskutil list
-  
-   ```
+    ```bash 
+    diskutil list
+    ```
 1. Run the following commands, inserting your variables.
 
-  ```bash 
-  diskutil eraseVolume jhfsx <new-usb-name> /Volumes/<old-usb-name>/
-  diskutil partitionDisk /dev/<disk-identifier> GPT JHFS+ <new-usb-name> 0b
-  diskutil cs convert /Volumes/<new-usb-name>/ -passphrase
-   ```
+    ```bash 
+    diskutil eraseVolume jhfsx <new-usb-name> /Volumes/<old-usb-name>/
+    diskutil partitionDisk /dev/<disk-identifier> GPT JHFS+ <new-usb-name> 0b
+    diskutil cs convert /Volumes/<new-usb-name>/ -passphrase
+    ```
 
 Instead of following the rest of that article, run the following commands and enter
 your details when prompted (note that you will need to have some git keys loaded to
