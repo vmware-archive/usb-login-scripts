@@ -18,7 +18,8 @@ These scripts extend the idea of loading SSH keys from a USB stick described
     ```bash 
     diskutil list
     ```
-1. Run the following commands, inserting your variables.
+1. Run the following commands to reformat the drive with password-protection,
+   inserting your variables.
 
     ```bash 
     diskutil eraseVolume jhfsx <new-usb-name> /Volumes/<old-usb-name>/
@@ -26,7 +27,7 @@ These scripts extend the idea of loading SSH keys from a USB stick described
     diskutil cs convert /Volumes/<new-usb-name>/ -passphrase
     ```
 
-Instead of following the rest of that article, run the following commands and enter
+Once the disk has been configured, run the following commands and enter
 your details when prompted (note that you will need to have some git keys loaded to
 access the repository, e.g. from your pair)
 
