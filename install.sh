@@ -58,6 +58,9 @@ if [[ -f "$LOADFILE" ]]; then
 	fi;
 fi;
 
+# Lowercase user initials to match typical git-duet usage
+USER_INITIALS="$(echo "$USER_INITIALS" | tr '[:upper:]' '[:lower:]')";
+
 # Minimal attempt to escape special characters to avoid broken load script
 USER_NAME="$(echo "$USER_NAME" | sed "s/'/'\\\\''/g")";
 USER_EMAIL="$(echo "$USER_EMAIL" | sed "s/'/'\\\\''/g")";
