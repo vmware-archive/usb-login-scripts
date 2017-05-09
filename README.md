@@ -6,13 +6,21 @@ These scripts extend the idea of loading SSH keys from a USB stick described
 ## Features
 
 * Load a password-protected SSH key, which will automatically expire at 6:20 local time
-  (or after 1 hour, whichever is longer)
+    + or after 1 hour, whichever is longer
 * Add your email and initials to the .git-authors file on the machine
+    + if needed
 * Log in to Google Chrome and Okta (requires manual intervention for 2FA prompts)
-* Automatically pull script updates from github (off by default; needs flag)
+    + optional to skip this at runtime
+* Automatically pull script updates from github
+    + off by default; needs flag
 * Automatically unmount the drive when complete
 
 ## Installation
+
+### Disk formatting
+
+These steps are not necessary if your drive has already been formatted,
+e.g. because you previously used Tammer's blog's steps.
 
 1.  Insert your USB and run the following command to get the disk identifier:
     ```bash 
@@ -27,9 +35,15 @@ These scripts extend the idea of loading SSH keys from a USB stick described
     diskutil cs convert /Volumes/<new-usb-name>/ -passphrase
     ```
 
-Once the disk has been configured, run the following commands and enter
-your details when prompted (note that you will need to have some git keys loaded to
-access the repository, e.g. from your pair)
+### Script installation and key creation
+
+- If you already have a keypair on your drive, the installation below will respect it
+- If you already have an executable file named `load`, the script will overwrite it
+- If you already a differently named executable file, the script will not touch it
+
+Run the following commands and enter your details when prompted. Bootstrap this
+step by first loading a git key that can access this repository,
+e.g. from your pair.
 
 ```bash
 cd /Volumes/usb-volume-name-here
@@ -37,11 +51,11 @@ git clone git@github.com:pivotal/usb-login-scripts.git
 ./usb-login-scripts/install.sh
 ```
 
-This will copy the repository on to your USB drive and create a `load` file in the
-root. It will also optionally create your public/private key pair in the root of
-your drive. You should upload the public key to github.
+This will copy the repository onto your USB drive and create a `load` file in the
+root. It will also _optionally_ create a public/private key pair in the root of
+your drive. If so, you should next upload the public key to github.
 
-Later you can update if needed by running a standard `git pull` from the
+Later, you can update the load script if needed by running `git pull` from the
 `usb-login-scripts` directory.
 
 ## scripts-original
