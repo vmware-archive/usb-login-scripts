@@ -20,20 +20,36 @@ fi;
 ALLARGS=" $* ";
 
 if ! [[ "$ALLARGS" =~ \ -[a-zA-Z]*[a-z] ]]; then
-	# Nothing has been focussed; focus all
+	# Nothing has been focused; focus all
 	ALLARGS=" $ALLARGS -dkle ";
 fi;
 
+function check_enabled() {
+	# Features are enabled if their flag has been specified (e.g. -l)
+	# AND their disabling flag has NOT been specified (e.g. --nologin / -L)
+
+	FLAG="$1";
+	LOWER_LETTER="$2";
+	UPPER_LETTER="$(echo "$LOWER_LETTER" | tr '[:lower:]' '[:upper:]')";
+
+	[[ "$ALLARGS" =~ \ -[a-zA-Z]*$LOWER_LETTER ]] && \
+	! [[ "$ALLARGS" == *" --no$FLAG "* ]] && \
+	! [[ "$ALLARGS" =~ \ -[a-zA-Z]*$UPPER_LETTER ]]
+};
+
 # Add to git authors
-if [[ "$ALLARGS" =~ \ -[a-zA-Z]*d ]] && ! [[ "$ALLARGS" == *" --noduet "* ]] && ! [[ "$ALLARGS" =~ \ -[a-zA-Z]*D ]]; then
-	if ! USER_INITIALS="$USER_INITIALS" USER_NAME="$USER_NAME" USER_EMAIL="$USER_EMAIL" "$ABSDIR/gitduet.sh"; then
-		echo "Failed to configure git duet author";
-		# not critical; continue
+RETRY_GITDUET="false";
+if check_enabled "duet" "d"; then
+	# First pass is non-interactive to avoid accidental password exposure
+	# (but still happens before login flow to optimise for the common use case)
+	if ! USER_INITIALS="$USER_INITIALS" USER_NAME="$USER_NAME" USER_EMAIL="$USER_EMAIL" NON_INTERACTIVE="true" "$ABSDIR/gitduet.sh"; then
+		echo "Conflict when setting git duet author; will try interactively at end";
+		RETRY_GITDUET="true";
 	fi;
 fi;
 
 # Load SSH key
-if [[ "$ALLARGS" =~ \ -[a-zA-Z]*k ]] && ! [[ "$ALLARGS" == *" --nokey "* ]] && ! [[ "$ALLARGS" =~ \ -[a-zA-Z]*K ]]; then
+if check_enabled "key" "k"; then
 	if [[ -z "$KEY_PASSWORD" ]]; then
 		echo -n "Enter password for SSH key: ";
 		read -s KEY_PASSWORD;
@@ -50,7 +66,7 @@ if [[ "$ALLARGS" =~ \ -[a-zA-Z]*k ]] && ! [[ "$ALLARGS" == *" --nokey "* ]] && !
 fi;
 
 # Log in to Chrome
-if [[ "$ALLARGS" =~ \ -[a-zA-Z]*l ]] && ! [[ "$ALLARGS" == *" --nologin "* ]] && ! [[ "$ALLARGS" =~ \ -[a-zA-Z]*L ]]; then
+if check_enabled "login" "l"; then
 	if [[ -z "$USER_PASSWORD" ]]; then
 		echo -n "Enter password for Okta (or - to skip): ";
 		read -s USER_PASSWORD;
@@ -72,8 +88,15 @@ if [[ "$ALLARGS" =~ \ -[a-zA-Z]*l ]] && ! [[ "$ALLARGS" == *" --nologin "* ]] &&
 	fi;
 fi;
 
+if [[ "$RETRY_GITDUET" == "true" ]]; then
+	echo "Retrying git duet author interactively...";
+	if ! USER_INITIALS="$USER_INITIALS" USER_NAME="$USER_NAME" USER_EMAIL="$USER_EMAIL" "$ABSDIR/gitduet.sh"; then
+		echo "Failed to configure git duet author";
+	fi;
+fi;
+
 # Update
-if [[ "$ALLARGS" == *" --update "* ]] || [[ "$ALLARGS" =~ \ -[a-zA-Z]*u ]]; then
+if check_enabled "update" "u"; then
 	echo "Updating";
 	if ! git -C "$ABSDIR/.." pull; then
 		echo "Update failed.";
@@ -82,6 +105,6 @@ if [[ "$ALLARGS" == *" --update "* ]] || [[ "$ALLARGS" =~ \ -[a-zA-Z]*u ]]; then
 fi;
 
 # Unmount
-if [[ "$ALLARGS" =~ \ -[a-zA-Z]*e ]] && ! [[ "$ALLARGS" == *" --noeject "* ]] && ! [[ "$ALLARGS" =~ \ -[a-zA-Z]*E ]]; then
+if check_enabled "eject" "e"; then
 	"$ABSDIR/unmount.sh";
 fi;

@@ -31,6 +31,9 @@ if [[ -n "$3" ]]; then
 fi;
 
 if [[ -z "$USER_EMAIL" ]]; then
+	if [[ "$NON_INTERACTIVE" == "true" ]]; then
+		exit 1;
+	fi;
 	echo -n "Enter email address: ";
 	read USER_EMAIL;
 fi;
@@ -61,12 +64,15 @@ if ! grep "$EMAILS_SECTION" < "$AUTHORFILE" > /dev/null; then
 fi;
 
 if [[ -z "$USER_NAME" ]]; then
+	if [[ "$NON_INTERACTIVE" == "true" ]]; then
+		exit 1;
+	fi;
 	echo -n "Enter name: ";
 	read USER_NAME;
 fi;
 
 while true; do
-	if [[ -z "$USER_INITIALS" ]]; then
+	if [[ -z "$USER_INITIALS" ]] && [[ "$NON_INTERACTIVE" != "true" ]]; then
 		echo -n "Enter initials for $USER_EMAIL (blank to skip): ";
 		read USER_INITIALS;
 	fi;
