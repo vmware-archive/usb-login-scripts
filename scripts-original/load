@@ -4,7 +4,7 @@ set -e
 
 HOURS=$1
 DIR=$(dirname $0)
-KEY=$DIR/id_rsa
+KEY="${SSH_KEY_FILE:-$DIR/id_rsa}"
 
 if [ -z $HOURS ]; then
   HOURS=1

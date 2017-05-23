@@ -2,7 +2,7 @@
 
 HOURS="$1";
 ABSDIR="$(cd "$(dirname "$0")";pwd)";
-KEY="$ABSDIR/id_rsa";
+KEY="${SSH_KEY_FILE:-$ABSDIR/id_rsa}";
 KEEP="$2";
 
 if [[ "$HOURS" == *"help"* ]] || [[ "$HOURS" == *"?"* ]]; then
