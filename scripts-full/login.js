@@ -154,10 +154,40 @@ if(stage < 1) {
 		}
 	}
 
-	sys.click(sys.processes[chrome.name()].menuBars[0]
+	var add_person = sys.processes[chrome.name()].menuBars[0]
 		.menuBarItems['People'].menus[0]
-		.menuItems['Add Person\u2026']
-	);
+		.menuItems['Add Person\u2026'];
+
+	if(!add_person.enabled()) {
+		// Add Person is disabled in guest window; switch to a random standard profile first
+		sys.click(sys.processes[chrome.name()].menuBars[0]
+			.menuBarItems['People'].menus[0]
+			.menuItems[0]);
+
+		wait_until(() => add_person.enabled());
+
+		if(old_win_id !== null) {
+			wait_until(() => (chrome.windows[0].id() != old_win_id));
+		}
+
+		// Close the original guest window if it isn't actually being used
+		if(close_old_win) {
+			var win = find_window(chrome, old_win_id);
+			if(win !== null) {
+				chrome.close(win);
+			}
+			close_old_win = false;
+		}
+
+		// If we opened a new window, close this random person's window when ready
+		var win = chrome.windows[0];
+		old_win_id = win.id();
+		if(win.tabs.length === 1 && win.tabs[0].title() === 'New Tab') {
+			close_old_win = true;
+		}
+	}
+
+	sys.click(add_person);
 
 	// Wait for new profile window to open
 	if(old_win_id !== null) {
@@ -173,6 +203,7 @@ if(stage < 1) {
 		if(win !== null) {
 			chrome.close(win);
 		}
+		close_old_win = false;
 	}
 
 	// Detect where we've ended up
