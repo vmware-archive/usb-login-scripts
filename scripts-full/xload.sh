@@ -19,6 +19,55 @@ fi;
 
 ALLARGS=" $* ";
 
+if [[ "$ALLARGS" == *"?"* ]] || [[ "$ALLARGS" == *" --help "* ]]; then
+	cat <<EOF;
+
+Start-of-day scripts for our nomadic lifestyle.
+
+Actions can be enabled using lowercase flags, or disabled using upper-case
+flags. The order of flags does not matter. Available flags:
+
+  -d/-D         Enable/disable writing initials in ~/.git-authors (git-duet
+                config)
+  -k/-K         Enable/disable loading ssh key
+  -l/-L         Enable/disable logging in to browser (can also be skipped by
+                entering "-" for password)
+  -e/-E         Enable/disable ejecting the drive once finished
+  -u (--update) Perform git pull after loading ssh key to update scripts
+  ? (--help)    Show this help message (blocks all other actions)
+
+The default is -dkle. This is overridden by providing any lowercase flags, or
+augmented by providing uppercase flags. For example:
+
+  -E
+  prevent the eject stage, performing only duet, keys and login.
+
+  -e
+  ONLY eject the drive.
+
+  -ke
+  Load keys and eject the drive.
+
+  -DL
+  prevent duet and login stages, performing keys and eject.
+
+  -dkle
+  The default, perform duet, keys, login and eject stages.
+
+  -dkleDKLE
+  Do nothing (uppercase flags take priority).
+
+  --update
+  -dkleu
+  Perform the default stages and update the scripts when keys have loaded.
+
+  -u
+  ONLY update the scripts.
+
+EOF
+	exit 0;
+fi;
+
 if ! [[ "$ALLARGS" =~ \ -[a-zA-Z]*[a-z] ]]; then
 	# Nothing has been focused; focus all
 	ALLARGS=" $ALLARGS -dkle ";
