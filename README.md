@@ -5,14 +5,14 @@ These scripts extend the idea of loading SSH keys from a USB stick described
 
 ## Features
 
-* Load a password-protected SSH key, which will automatically expire at 6:20 local time
-    + or after 1 hour, whichever is longer
-* Add your email and initials to the .git-authors file on the machine
-    + if needed
+* Load a password-protected SSH key, which will automatically expire at 6:20 local time,
+  or after 1 hour (whichever is longer)
+* Add your email and initials to the .git-authors file on the machine if not already
+  present
 * Log in to Google Chrome and Okta (requires manual intervention for 2FA prompts)
-    + optional to skip this at runtime
+    + Can be skipped at runtime
 * Automatically pull script updates from github
-    + off by default; needs flag
+    + Off by default; needs flag
 * Automatically unmount the drive when complete
 
 ## Installation
@@ -39,11 +39,11 @@ e.g. because you previously used Tammer's blog's steps.
 
 - If you already have a keypair on your drive, the installation below will respect it
 - If you already have an executable file named `load`, the script will overwrite it
-- If you already a differently named executable file, the script will not touch it
+  (after prompting)
+- If you already a differently named executable file or other content, the script will
+  not touch it
 
-Run the following commands and enter your details when prompted. Bootstrap this
-step by first loading a git key that can access this repository,
-e.g. from your pair.
+Run the following commands and enter your details when prompted:
 
 ```bash
 cd /Volumes/usb-volume-name-here
@@ -56,7 +56,8 @@ root. It will also _optionally_ create a public/private key pair in the root of
 your drive. If so, you should next upload the public key to github.
 
 Later, you can update the load script if needed by running `git pull` from the
-`usb-login-scripts` directory.
+`usb-login-scripts` directory (or if you are using the "full" version, by specifying
+the `--update` flag).
 
 ## scripts-original
 
@@ -66,7 +67,7 @@ number of hours, then eject the drive.
 ### Use
 
 1. Insert your USB key and enter your password to unlock it (if you chose to encrypt
-the entire filesystem)
+   the entire filesystem)
 1. In a terminal run `/Volumes/my-usb-stick-name/load <hours>`
 1. You will be prompted for your SSH key password; enter it and the key will be loaded
    for the given number of hours
@@ -80,7 +81,7 @@ time to be shortly after the end of the working day (6:20 local time).
 ### Use
 
 1. Insert your USB key and enter your password to unlock it (if you chose to encrypt
-the entire filesystem)
+   the entire filesystem)
 1. In a terminal run `/Volumes/my-usb-stick-name/load`
 1. You will be prompted for your SSH key password; enter it and the key will be loaded
    until the end of the day
@@ -96,7 +97,7 @@ interaction.
 ### Use
 
 1. Insert your USB key and enter your password to unlock it (if you chose to encrypt
-the entire filesystem)
+   the entire filesystem)
 1. In a terminal run `/Volumes/my-usb-stick-name/load`
 1. You will be added to `.git-authors` immediately (to prevent this, add `--noduet` or
    `-D` to the command)
