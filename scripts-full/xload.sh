@@ -48,11 +48,11 @@ flags. The order of flags does not matter. Available flags:
   -u (--update) Perform git pull after loading ssh key to update scripts
   ? (--help)    Show this help message (blocks all other actions)
 
-The default is -dkle. This is overridden by providing any lowercase flags, or
+The default is -dke. This is overridden by providing any lowercase flags, or
 augmented by providing uppercase flags. For example:
 
   -E
-  prevent the eject stage, performing only duet, keys and login.
+  prevent the eject stage, performing only duet and keys.
 
   -e
   ONLY eject the drive.
@@ -60,17 +60,20 @@ augmented by providing uppercase flags. For example:
   -ke
   Load keys and eject the drive.
 
-  -DL
-  prevent duet and login stages, performing keys and eject.
+  -DE
+  prevent duet and eject stages, performing keys.
+
+  -dke
+  The default, perform duet, keys and eject stages.
 
   -dkle
-  The default, perform duet, keys, login and eject stages.
+  The default, plus automatic logging in to Chrome.
 
   -dkleDKLE
   Do nothing (uppercase flags take priority).
 
   --update
-  -dkleu
+  -dkeu
   Perform the default stages and update the scripts when keys have loaded.
 
   -u
@@ -81,8 +84,8 @@ EOF
 fi;
 
 if ! [[ "$ALLARGS" =~ \ -[a-zA-Z]*[a-z] ]]; then
-	# Nothing has been focused; focus all
-	ALLARGS=" $ALLARGS -dkle ";
+	# Nothing has been focused; focus defaults
+	ALLARGS=" $ALLARGS -dke ";
 fi;
 
 function check_enabled() {
