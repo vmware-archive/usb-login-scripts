@@ -92,20 +92,22 @@ time to be shortly after the end of the working day (6:20 local time).
 
 This is a further advance on the scripts which will automatically add you to the
 machine's `.git-authors` file, and attempt to log you in to Chrome with minimal
-interaction.
+interaction (Chrome login is very beta, so is disabled by default; provide `-dkle` to the
+load command to enable it. See https://github.com/pivotal/usb-login-scripts/issues/11
+for details).
 
 ### Use
 
 1. Insert your USB key and enter your password to unlock it (if you chose to encrypt
    the entire filesystem)
-1. In a terminal run `/Volumes/my-usb-stick-name/load`
+1. In a terminal run `/Volumes/my-usb-stick-name/load`. Note: If you want to log in to
+   Chrome automatically (beta!), add -dkle to the command (Duet, Keys, Login, Eject)
 1. You will be added to `.git-authors` immediately (to prevent this, add `--noduet` or
    `-D` to the command)
 1. You will be prompted for your SSH key password; enter it and the key will be loaded
    until the end of the day (to prevent this, add `--nokey` or `-K` to the command)
-1. You will be prompted for your Okta password; enter it and the script will begin
-   creating a new profile in Google Chrome (to prevent this, add `--nologin` or `-L` to
-   the command)
+1. If you chose to log in to Chrome, you will be prompted for your Okta password; enter
+   it and the script will begin creating a new profile in Google Chrome.
    * You may be prompted to enable assistive access for the Terminal. The OS will guide
      you through how to do this. If this happens, you may need to kill and re-run the
      script, but you will not need to do it again.
@@ -119,11 +121,11 @@ interaction.
    `--noeject` or `-E` to the command)
 
 As with typical UNIX commands, you can chain short-form arguments. For example,
-`load -KL` will disable key loading and logging in to Chrome.
+`load -KE` will disable key loading and ejecting the drive.
 
-Note that all stages except update will run by default. You can disable stages using
-capital letters, or focus stages using lowercase letters (e.g. `load -k` will *only* load
-the SSH key, or `load -ke` will load the SSH key and eject).
+Note that all stages except update and Chrome login will run by default. You can disable
+stages using capital letters, or focus stages using lowercase letters (e.g. `load -k`
+will *only* load the SSH key, or `load -ke` will load the SSH key and eject).
 
 If anything goes wrong, simply kill with Ctrl+C.
 
