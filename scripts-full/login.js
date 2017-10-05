@@ -305,15 +305,13 @@ if(stage < 7) {
 	// Okta login page
 	type_message(user_email);
 	type_message('\t'); // tab
-	if(/^59\./.test(chrome.version())) {
+	if(/^(59|60)\./.test(chrome.version())) {
 		// https://github.com/pivotal/usb-login-scripts/issues/11
 		// https://bugs.chromium.org/p/chromium/issues/detail?id=661810
 
-		// TODO: Chrome 59 blocks the secure password entry method previously used
-		// Need to find an alternative, but for now just save time by leaving it to the user.
-		// (it's possible that a future version may re-enable this, so only block known-bad versions)
+		// Chrome 59 and 60 broke this behaviour, but 61 fixed it.
 
-		console.log("! Chrome 59 detected: automatic secure password entry not available (manual action required!)");
+		console.log("! Old Chrome version detected: automatic secure password entry not available (manual action required!)");
 	} else {
 		runjs_inside_webview_hack(chrome, profile_login_tab, 'signin-frame',
 			"var deobfuscate = " + deobfuscate.toString() + ";" +
