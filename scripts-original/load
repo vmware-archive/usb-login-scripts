@@ -24,4 +24,4 @@ fi
 
 /usr/bin/ssh-add -D
 /usr/bin/ssh-add -t ${HOURS}H $KEY
-/usr/sbin/diskutil umount force $DIR
+/usr/sbin/diskutil umount force "$(echo "$DIR" | cut -d'/' -f-3)"
