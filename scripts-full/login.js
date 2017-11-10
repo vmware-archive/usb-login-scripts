@@ -348,6 +348,7 @@ if(stage < 8) {
 	}
 
 	// Wait for login pages to disappear
+	var fallbackCounter = 3;
 	run_until_success(() => {
 		try {
 			return (
@@ -355,7 +356,11 @@ if(stage < 8) {
 				runjs(chrome, profile_login_tab, "return !document.getElementById('signin-frame');")
 			);
 		} catch(e) {
-			return false; // tab probably closed while we were checking it; next loop will confirm
+			// tab probably closed while we were checking it; next loop will confirm
+			// or, in latest Chrome version, this happens repeatedly when ready, so
+			// catch that too.
+			-- fallbackCounter;
+			return fallbackCounter <= 0;
 		}
 	});
 	stage = 8;
