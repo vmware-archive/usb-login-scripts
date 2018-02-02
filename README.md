@@ -47,7 +47,7 @@ Run the following commands and enter your details when prompted:
 
 ```bash
 cd /Volumes/usb-volume-name-here
-git clone git@github.com:pivotal/usb-login-scripts.git
+git clone https://github.com/pivotal/usb-login-scripts.git
 ./usb-login-scripts/install.sh
 ```
 
