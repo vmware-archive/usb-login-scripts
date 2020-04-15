@@ -9,8 +9,7 @@ These scripts extend the idea of loading SSH keys from a USB stick described
   or after 1 hour (whichever is longer)
 * Add your email and initials to the .git-authors file on the machine if not already
   present
-* Automatically pull script updates from github
-    + Off by default; needs flag
+* Automatically pull script updates from github (off by default; needs `--update` flag)
 * Automatically unmount the drive when complete
 
 ## Installation
@@ -49,6 +48,10 @@ git clone https://github.com/pivotal/usb-login-scripts.git
 ./usb-login-scripts/install.sh
 ```
 
+(if you would like to use the script from Tammer's blog, which does not add you to
+the git duet file or calculate an automatic expiry time for the keys, you can run
+`./usb-login-scripts/install.sh --classic` instead)
+
 This will copy the repository onto your USB drive and create a `load` file in the
 root. It will also _optionally_ create a public/private key pair in the root of
 your drive. If so, you should next upload the public key to github.
@@ -57,41 +60,7 @@ Later, you can update the load script if needed by running `git pull` from the
 `usb-login-scripts` directory (or if you are using the "full" version, by specifying
 the `--update` flag).
 
-## scripts-original
-
-This is the original script from Tammer's blog. It will load your SSH key for a given
-number of hours, then eject the drive.
-
-### Use
-
-1. Insert your USB key and enter your password to unlock it (if you chose to encrypt
-   the entire filesystem)
-1. In a terminal run `/Volumes/my-usb-stick-name/load <hours>`
-1. You will be prompted for your SSH key password; enter it and the key will be loaded
-   for the given number of hours
-1. The drive will automatically eject when the script is finished
-
-## scripts-autoexpire
-
-This is a small modification of the original script which will calculate an expiry
-time to be shortly after the end of the working day (6:20 local time).
-
-### Use
-
-1. Insert your USB key and enter your password to unlock it (if you chose to encrypt
-   the entire filesystem)
-1. In a terminal run `/Volumes/my-usb-stick-name/load`
-1. You will be prompted for your SSH key password; enter it and the key will be loaded
-   until the end of the day
-1. The drive will automatically eject when the script is finished (to prevent this,
-   add `keep` to the command)
-
-## scripts-full
-
-This is a further advance on the scripts which will automatically add you to the
-machine's `.git-authors` file.
-
-### Use
+## Use
 
 1. Insert your USB key and enter your password to unlock it (if you chose to encrypt
    the entire filesystem)
@@ -103,7 +72,7 @@ machine's `.git-authors` file.
 1. If you specify `--update` or `-u`, a `git pull` will be attempted to update the
    scripts.
 1. The drive will automatically eject when the script is finished (to prevent this, add
-   `--noeject` or `-E` to the command)
+   `--noeject`, `-E`, or `keep` to the command)
 
 As with typical UNIX commands, you can chain short-form arguments. For example,
 `load -KE` will disable key loading and ejecting the drive.
@@ -114,11 +83,11 @@ or `load -ke` will load the SSH key and eject).
 
 If anything goes wrong, simply kill with Ctrl+C.
 
-### Details
+## Details
 
 Orchestration is handled by `xload.sh`, but scripts can also be executed on their own.
 
-#### Git duet author file
+### Git duet author file
 
 Searches the `~/.git-authors` file for the user's email address, and if not found,
 attempts to create a new entry under `authors:`. If the user's initials are already in
@@ -126,14 +95,14 @@ use, will prompt for alternative initials.
 
 Code is in `gitduet.sh`.
 
-#### Key loading
+### Key loading
 
 Keys are loaded with `ssh-add`, and `expect` is used to enter the password
 programmatically.
 
 Code is in `keys.sh`.
 
-#### Unmounting
+### Unmounting
 
 Unmounting is only attempted if the script's path contains "/Volumes/", to prevent
 accidentally unmounting a built-in drive.

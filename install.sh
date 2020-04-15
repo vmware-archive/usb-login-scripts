@@ -14,21 +14,28 @@
 
 DRIVEDIR="$(cd "$(dirname "$0")/..";pwd)";
 
+SCRIPT="scripts-full/xload.sh";
+if [[ " $* " == *" --classic "* ]]; then
+	SCRIPT="scripts-original/load";
+fi
+
 echo "This will install in to $DRIVEDIR.";
 echo "If this is not correct, exit with Ctrl+C";
 echo;
 
-echo -n "Enter your name (for git duet) - typically first and last name: ";
+echo -n "Optional: Enter your name (for SSH key and git duet) - typically first and last name: ";
 read USER_NAME;
 echo;
 
-echo -n "Enter your initials (for git duet): ";
+echo -n "Optional: Enter your initials (for git duet): ";
 read USER_INITIALS;
 echo;
 
-echo -n "Enter your email address: ";
-read USER_EMAIL;
-echo;
+if [[ -n "$USER_INITIALS" ]]; then
+  echo -n "Enter your email address (for git duet): ";
+  read USER_EMAIL;
+  echo;
+fi;
 
 if ! [[ -f "$DRIVEDIR/id_rsa" ]]; then
 	echo -n "No SSH key found at $DRIVEDIR/id_rsa; would you like to create one? [y/n] ";
@@ -42,26 +49,11 @@ if ! [[ -f "$DRIVEDIR/id_rsa" ]]; then
 	fi;
 fi;
 
-echo "Which version of the scripts would you like to use? (see README.md for details)";
-echo -n "[[f]ull / [a]utoexpire / [o]riginal] ";
-read PROMPT;
-echo;
-if [[ "$PROMPT" == "f"* ]]; then
-	SCRIPT="scripts-full/xload.sh";
-elif [[ "$PROMPT" == "a"* ]]; then
-	SCRIPT="scripts-autoexpire/xload.sh";
-elif [[ "$PROMPT" == "o"* ]]; then
-	SCRIPT="scripts-original/load";
-else
-	echo "Option not recognised. Aborting." >&2;
-	exit 1;
-fi;
-
 LOADFILE="$DRIVEDIR/load";
 
 if [[ -f "$LOADFILE" ]]; then
 	echo "Warning: $LOADFILE already exists.";
-	echo -n "Would you like to replace this file? [y/n] ";
+	echo -n "Would you like to replace this file? [y/N] ";
 	read PROMPT;
 	echo;
 	if [[ "$PROMPT" != "y"* ]]; then
