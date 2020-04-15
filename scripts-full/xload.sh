@@ -36,10 +36,16 @@ flags. The order of flags does not matter. Available flags:
   ? (--help)    Show this help message (blocks all other actions)
 
 The default is -dke. This is overridden by providing any lowercase flags, or
-augmented by providing uppercase flags. For example:
+augmented by providing uppercase flags.
+
+You can also specify an explicit number of hours to load the keys (as a
+whole number)
+
+Examples:
 
   -E
-  prevent the eject stage, performing only duet and keys.
+  keep
+  Prevent the eject stage, performing only duet and keys.
 
   -e
   ONLY eject the drive.
@@ -48,13 +54,19 @@ augmented by providing uppercase flags. For example:
   Load keys and eject the drive.
 
   -DE
-  prevent duet and eject stages, performing keys.
+  Prevent duet and eject stages, performing keys.
 
   -dke
   The default, perform duet, keys and eject stages.
 
   -dkeDKE
   Do nothing (uppercase flags take priority).
+
+  7
+  Load the keys for 7 hours regardless of the current time.
+
+  -D 7
+  Prevent the duet stage, and load the keys for 7 hours.
 
   --update
   -dkeu
@@ -98,6 +110,15 @@ fi;
 
 # Load SSH key
 if check_enabled "key" "k"; then
+  EXPLICIT_HOURS=""
+  if [[ "$1" =~ [0-9]* ]]; then
+    EXPLICIT_HOURS="$1"
+  elif [[ "$2" =~ [0-9]* ]]; then
+    EXPLICIT_HOURS="$2"
+  elif [[ "$3" =~ [0-9]* ]]; then
+    EXPLICIT_HOURS="$3"
+  fi;
+
 	if [[ -z "$KEY_PASSWORD" ]]; then
 		echo -n "Enter password for SSH key: ";
 		read -s KEY_PASSWORD;
@@ -106,7 +127,7 @@ if check_enabled "key" "k"; then
 	if [[ -z "$KEY_PASSWORD" ]]; then
 		echo "Skipping SSH key load";
 	else
-		if ! KEY_PASSWORD="$KEY_PASSWORD" "$ABSDIR/keys.sh"; then
+		if ! KEY_PASSWORD="$KEY_PASSWORD" "$ABSDIR/keys.sh" "$EXPLICIT_HOURS"; then
 			echo "Failed to load SSH key";
 			exit 1;
 		fi;
@@ -130,6 +151,6 @@ if check_enabled "update" "u"; then
 fi;
 
 # Unmount
-if check_enabled "eject" "e"; then
+if check_enabled "eject" "e" && ! [[ "$ALLARGS" =~ \ keep\  ]]; then
 	"$ABSDIR/unmount.sh";
 fi;
