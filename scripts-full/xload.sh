@@ -17,17 +17,6 @@ ABSDIR="$(cd "$(dirname "$0")";pwd)";
 USER_NAME="${USER_NAME:-$DEFAULT_USER_NAME}";
 USER_EMAIL="${USER_EMAIL:-$DEFAULT_USER_EMAIL}";
 USER_INITIALS="${USER_INITIALS:-$DEFAULT_USER_INITIALS}";
-MFA_MODE="${MFA_MODE:-$DEFAULT_MFA_MODE}";
-
-if [[ -z "$USER_EMAIL" ]]; then
-	if [[ -n "$USER_NAME" ]]; then
-		echo "Hi, $USER_NAME";
-	fi;
-	echo -n "Enter your email address: ";
-	read USER_EMAIL;
-else
-	echo "Login for $USER_NAME [$USER_EMAIL]";
-fi;
 
 ALLARGS=" $* ";
 
@@ -42,8 +31,6 @@ flags. The order of flags does not matter. Available flags:
   -d/-D         Enable/disable writing initials in ~/.git-authors (git-duet
                 config)
   -k/-K         Enable/disable loading ssh key
-  -l/-L         Enable/disable logging in to browser (can also be skipped by
-                entering "-" for password)
   -e/-E         Enable/disable ejecting the drive once finished
   -u (--update) Perform git pull after loading ssh key to update scripts
   ? (--help)    Show this help message (blocks all other actions)
@@ -66,10 +53,7 @@ augmented by providing uppercase flags. For example:
   -dke
   The default, perform duet, keys and eject stages.
 
-  -dkle
-  The default, plus automatic logging in to Chrome.
-
-  -dkleDKLE
+  -dkeDKE
   Do nothing (uppercase flags take priority).
 
   --update
@@ -103,7 +87,7 @@ function check_enabled() {
 
 # Add to git authors
 RETRY_GITDUET="false";
-if check_enabled "duet" "d"; then
+if [[ -n "$USER_INITIALS" ]] && check_enabled "duet" "d"; then
 	# First pass is non-interactive to avoid accidental password exposure
 	# (but still happens before login flow to optimise for the common use case)
 	if ! USER_INITIALS="$USER_INITIALS" USER_NAME="$USER_NAME" USER_EMAIL="$USER_EMAIL" NON_INTERACTIVE="true" "$ABSDIR/gitduet.sh"; then
@@ -122,31 +106,8 @@ if check_enabled "key" "k"; then
 	if [[ -z "$KEY_PASSWORD" ]]; then
 		echo "Skipping SSH key load";
 	else
-		if ! USER_EMAIL="$USER_EMAIL" KEY_PASSWORD="$KEY_PASSWORD" "$ABSDIR/keys.sh"; then
+		if ! KEY_PASSWORD="$KEY_PASSWORD" "$ABSDIR/keys.sh"; then
 			echo "Failed to load SSH key";
-			exit 1;
-		fi;
-	fi;
-fi;
-
-# Log in to Chrome
-if check_enabled "login" "l"; then
-	if [[ -z "$USER_PASSWORD" ]]; then
-		echo -n "Enter password for Okta (or - to skip): ";
-		read -s USER_PASSWORD;
-		echo;
-	fi;
-
-	if [[ -z "$USER_PASSWORD" ]]; then
-		# Assume same password if not given
-		USER_PASSWORD="$KEY_PASSWORD";
-	fi;
-
-	if [[ -z "$USER_PASSWORD" ]] || [[ "$USER_PASSWORD" == "-" ]]; then
-		echo "Skipping Chrome login";
-	else
-		if ! USER_EMAIL="$USER_EMAIL" USER_PASSWORD="$USER_PASSWORD" MFA_MODE="$MFA_MODE" osascript -l JavaScript < "$ABSDIR/login.js"; then
-			echo "Failed to sign in to Chrome";
 			exit 1;
 		fi;
 	fi;
