@@ -75,7 +75,9 @@ expect {
 	}
 }
 END
-	echo "SSH key loaded, will expire in $SECONDS seconds";
+	NOW="$(date "+%s")";
+	(( EXPIRATION = "$NOW" + "$SECONDS" ));
+	echo "SSH key loaded, will expire at $(date -r "$EXPIRATION") (in $SECONDS seconds)";
 	exit 0;
 else
 	echo "Incorrect SSH key password!" >&2;
