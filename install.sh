@@ -19,6 +19,7 @@ if [[ " $* " == *" --classic "* ]]; then
 	SCRIPT="scripts-original/load";
 fi
 
+echo;
 echo "This will install in to $DRIVEDIR.";
 echo "If this is not correct, exit with Ctrl+C";
 echo;

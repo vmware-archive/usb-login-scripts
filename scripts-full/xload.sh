@@ -110,13 +110,13 @@ fi;
 
 # Load SSH key
 if check_enabled "key" "k"; then
-  EXPLICIT_HOURS=""
+  EXPLICIT_HOURS="";
   if [[ "$1" =~ [0-9]* ]]; then
-    EXPLICIT_HOURS="$1"
+    EXPLICIT_HOURS="$1";
   elif [[ "$2" =~ [0-9]* ]]; then
-    EXPLICIT_HOURS="$2"
+    EXPLICIT_HOURS="$2";
   elif [[ "$3" =~ [0-9]* ]]; then
-    EXPLICIT_HOURS="$3"
+    EXPLICIT_HOURS="$3";
   fi;
 
 	if [[ -z "$KEY_PASSWORD" ]]; then
@@ -151,6 +151,6 @@ if check_enabled "update" "u"; then
 fi;
 
 # Unmount
-if check_enabled "eject" "e" && ! [[ "$ALLARGS" =~ \ keep\  ]]; then
+if check_enabled "eject" "e" && [[ "$ALLARGS" != *" keep "* ]]; then
 	"$ABSDIR/unmount.sh";
 fi;
