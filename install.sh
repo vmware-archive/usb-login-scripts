@@ -14,40 +14,51 @@
 
 DRIVEDIR="$(cd "$(dirname "$0")/..";pwd)";
 
-SCRIPT="scripts-full/xload.sh";
 if [[ " $* " == *" --classic "* ]]; then
 	SCRIPT="scripts-original/load";
-fi
+else
+  SCRIPT="scripts-full/xload.sh";
 
-echo;
-echo "This will install in to $DRIVEDIR.";
-echo "If this is not correct, exit with Ctrl+C";
-echo;
-
-echo -n "Optional: Enter your name (for SSH key and git duet) - typically first and last name: ";
-read USER_NAME;
-echo;
-
-echo -n "Optional: Enter your initials (for git duet): ";
-read USER_INITIALS;
-echo;
-
-if [[ -n "$USER_INITIALS" ]]; then
-  echo -n "Enter your email address (for git duet): ";
-  read USER_EMAIL;
+  echo -n "Optional: Enter your initials (for git duet): ";
+  read USER_INITIALS;
   echo;
+
+  if [[ -n "$USER_INITIALS" ]]; then
+    echo -n "Enter your name (for git duet) - typically first and last name: ";
+    read USER_NAME;
+    echo;
+
+    echo -n "Enter your email address (for git duet): ";
+    read USER_EMAIL;
+    echo;
+  fi;
+fi;
+
+echo;
+echo "This will install in $DRIVEDIR";
+echo -n "Continue? [Y/n] ";
+read PROMPT;
+echo;
+if [[ "$PROMPT" == "n"* ]]; then
+  echo "Aborting." >&2;
+  exit 1;
 fi;
 
 if ! [[ -f "$DRIVEDIR/id_rsa" ]]; then
-	echo -n "No SSH key found at $DRIVEDIR/id_rsa; would you like to create one? [y/n] ";
-	read PROMPT;
-	echo;
-	if [[ "$PROMPT" == "y"* ]]; then
-		if ! ssh-keygen -f "$DRIVEDIR/id_rsa" -C "$USER_NAME"; then
-			echo "Failed to generate key. Aborting." >&2;
-			exit 1;
-		fi;
-	fi;
+  echo -n "No SSH key found at $DRIVEDIR/id_rsa; would you like to create one? [y/n] ";
+  read PROMPT;
+  echo;
+  if [[ "$PROMPT" == "y"* ]]; then
+    if [[ -z "$USER_NAME" ]]; then
+      echo -n "Enter your name (for SSH key): ";
+      read USER_NAME;
+      echo;
+    fi;
+    if ! ssh-keygen -f "$DRIVEDIR/id_rsa" -C "$USER_NAME"; then
+      echo "Failed to generate key. Aborting." >&2;
+      exit 1;
+    fi;
+  fi;
 fi;
 
 LOADFILE="$DRIVEDIR/load";
