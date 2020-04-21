@@ -15,7 +15,16 @@
 ABSDIR="$(cd "$(dirname "$0")";pwd)";
 
 if [[ "$(echo "$ABSDIR" | cut -d'/' -f-2)" == "/Volumes" ]]; then
-	/usr/sbin/diskutil umount force "$(echo "$ABSDIR" | cut -d'/' -f-3)";
+	VOLUME="$(echo "$ABSDIR" | cut -d'/' -f-3)";
+	VOLUME_NAME="$(echo "$VOLUME" | cut -d'/' -f3)";
+	DISK="$(diskutil list external physical | grep " $VOLUME_NAME " | tr -s ' ' | cut -f7 -d' ')";
+
+	/usr/sbin/diskutil unmount force "$VOLUME";
+
+	# Unmount whole disk if partitioned
+	if /usr/sbin/diskutil list "$DISK" >/dev/null 2>&1; then
+		/usr/sbin/diskutil unmountDisk "$DISK";
+	fi;
 else
 	echo "Not in /Volumes/; Not ejecting.";
 fi;
