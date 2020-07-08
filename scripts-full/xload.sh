@@ -144,7 +144,7 @@ fi;
 # Update
 if check_enabled "update" "u"; then
 	echo "Updating";
-	if ! git -C "$ABSDIR/.." pull; then
+	if ! git -C "$ABSDIR/.." pull --ff-only; then
 		echo "Update failed.";
 		# not critical; continue
 	fi;
