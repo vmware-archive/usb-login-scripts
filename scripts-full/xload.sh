@@ -111,11 +111,11 @@ fi;
 # Load SSH key
 if check_enabled "key" "k"; then
   EXPLICIT_HOURS="";
-  if [[ "$1" =~ [0-9]* ]]; then
+  if [[ "$1" =~ ^[0-9]*$ ]]; then
     EXPLICIT_HOURS="$1";
-  elif [[ "$2" =~ [0-9]* ]]; then
+  elif [[ "$2" =~ ^[0-9]*$ ]]; then
     EXPLICIT_HOURS="$2";
-  elif [[ "$3" =~ [0-9]* ]]; then
+  elif [[ "$3" =~ ^[0-9]*$ ]]; then
     EXPLICIT_HOURS="$3";
   fi;
 
